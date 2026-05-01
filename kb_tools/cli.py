@@ -6,7 +6,7 @@ import argparse
 import re
 import sys
 from dataclasses import dataclass
-from datetime import date, datetime
+from datetime import date
 from pathlib import Path
 
 
@@ -37,6 +37,12 @@ def slugify_title(title: str) -> str:
     if not slug:
         raise ValueError("project title must contain at least one letter or number")
     return slug
+
+
+def markdown_filename(name: str) -> str:
+    while name.lower().endswith(".md"):
+        name = name[:-3]
+    return f"{name}.md"
 
 
 def write_new_note(path: Path, body: str, dry_run: bool) -> NoteResult:
@@ -75,7 +81,7 @@ def create_daily_note(vault: Path, note_date: date, dry_run: bool) -> NoteResult
 
 
 def create_project_note(vault: Path, title: str, dry_run: bool) -> NoteResult:
-    path = vault / PROJECTS_DIR / f"{slugify_title(title)}.md"
+    path = vault / PROJECTS_DIR / markdown_filename(slugify_title(title))
     return write_new_note(path, project_note_body(title), dry_run)
 
 
@@ -136,6 +142,10 @@ def format_path(path: Path) -> str:
     return str(path.expanduser())
 
 
+def format_inbox_path(path: Path) -> str:
+    return format_path(path.with_name(markdown_filename(path.name)))
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
@@ -157,7 +167,7 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "inbox":
             notes = list_unprocessed_inbox(vault)
             for path in notes:
-                print(format_path(path))
+                print(format_inbox_path(path))
             if not notes:
                 print(f"No unprocessed notes found in {format_path(vault / INBOX_DIR)}")
             return 0

@@ -50,6 +50,11 @@ class KbToolsTests(unittest.TestCase):
     def test_project_note_slug_keeps_unicode_words(self) -> None:
         self.assertEqual("知识库-project", cli.slugify_title("知识库 Project"))
 
+    def test_markdown_filename_does_not_double_append_extension(self) -> None:
+        self.assertEqual("Inbox.md", cli.markdown_filename("Inbox.md"))
+        self.assertEqual("Inbox.md", cli.markdown_filename("Inbox.md.md"))
+        self.assertEqual("Inbox.md", cli.markdown_filename("Inbox"))
+
     def test_inbox_lists_only_markdown_files_sorted_by_name(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             vault = Path(tmp)
@@ -64,6 +69,36 @@ class KbToolsTests(unittest.TestCase):
                 [inbox / "alpha.md", inbox / "zeta.md"],
                 cli.list_unprocessed_inbox(vault),
             )
+
+    def test_main_inbox_prints_existing_md_filename_once(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            vault = Path(tmp)
+            inbox = vault / "00 Inbox"
+            inbox.mkdir()
+            note = inbox / "Inbox.md"
+            note.write_text("", encoding="utf-8")
+
+            stdout = io.StringIO()
+            with redirect_stdout(stdout):
+                code = cli.main(["--vault", tmp, "inbox"])
+
+            self.assertEqual(0, code)
+            self.assertEqual(f"{note}\n", stdout.getvalue())
+            self.assertNotIn("Inbox.md.md", stdout.getvalue())
+
+    def test_main_inbox_prints_double_md_filename_once(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            vault = Path(tmp)
+            inbox = vault / "00 Inbox"
+            inbox.mkdir()
+            (inbox / "Inbox.md.md").write_text("", encoding="utf-8")
+
+            stdout = io.StringIO()
+            with redirect_stdout(stdout):
+                code = cli.main(["--vault", tmp, "inbox"])
+
+            self.assertEqual(0, code)
+            self.assertEqual(f"{inbox / 'Inbox.md'}\n", stdout.getvalue())
 
     def test_main_inbox_prints_empty_message(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
