@@ -11,9 +11,7 @@ Usage: ./scripts/check.sh [--dry-run|--apply|--help]
 
 Runs project checks.
 
-This template is language-neutral. The default checks only verify that the
-required template files exist. Replace or extend these checks after choosing a
-project stack, while preserving --dry-run, --apply, and --help.
+Checks required project files and runs the Python standard-library test suite.
 
 Default: --apply
 EOF
@@ -42,6 +40,8 @@ scripts/dev.sh
 scripts/session-start.sh
 scripts/session-close.sh
 .gitignore
+kb_tools/cli.py
+tests/test_cli.py
 "
 
 # In dry-run mode, describe the checks without reading or changing state.
@@ -50,6 +50,7 @@ if [ "$MODE" = "dry-run" ]; then
     printf '[dry-run] check %s exists\n' "$path"
   done
   printf '[dry-run] check shell scripts are executable\n'
+  printf '[dry-run] run python3 -m unittest discover -s tests\n'
   exit 0
 fi
 
@@ -69,4 +70,6 @@ for path in scripts/check.sh scripts/dev.sh scripts/session-start.sh scripts/ses
   fi
 done
 
-printf 'Template checks passed.\n'
+python3 -m unittest discover -s tests
+
+printf 'Project checks passed.\n'

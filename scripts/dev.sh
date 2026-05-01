@@ -9,9 +9,7 @@ usage() {
   cat <<'EOF'
 Usage: ./scripts/dev.sh [--dry-run|--apply|--help]
 
-Starts the local development workflow. This template is language-neutral;
-replace the placeholder command after choosing a stack, while preserving
---dry-run, --apply, and --help.
+Shows the local CLI help for this Python standard-library project.
 
 Default: --apply
 EOF
@@ -30,11 +28,8 @@ done
 
 # In dry-run mode, show the intended behavior without starting processes.
 if [ "$MODE" = "dry-run" ]; then
-  printf '[dry-run] print project startup instructions\n'
-  printf '[dry-run] no server or watcher would be started by this template\n'
+  printf '[dry-run] run python3 -m kb_tools --help\n'
   exit 0
 fi
 
-# In apply mode, the template gives guidance until a real stack exists.
-printf 'No language stack configured yet.\n'
-printf 'Update scripts/dev.sh with the project-specific development command.\n'
+python3 -m kb_tools --help

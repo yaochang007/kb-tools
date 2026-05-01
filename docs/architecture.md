@@ -2,45 +2,53 @@
 
 ## Purpose
 
-Describe what the project does and who it serves.
+`kb-tools` provides small local command line utilities for maintaining an
+Obsidian vault at `~/KnowledgeBase`.
 
 ## Principles
 
-- Stay language-neutral until a stack is chosen.
+- Use the Python standard library only until a dependency is deliberately added.
 - Prefer simple project boundaries that are easy to explain and test.
 - Keep configuration explicit and avoid committing secrets.
 - Document behavior changes close to the code or workflow they affect.
+- Never overwrite existing notes.
+- Do not modify or delete existing vault content unless explicitly requested.
 
 ## System Overview
 
-- Entry points:
-- Core modules:
-- External dependencies:
-- Data stores:
-- Background jobs:
+- Entry points: `python3 -m kb_tools`, `scripts/check.sh`, `scripts/dev.sh`
+- Core modules: `kb_tools.cli`
+- External dependencies: none
+- Data stores: local Markdown files in the configured Obsidian vault
+- Background jobs: none
 
 ## Boundaries
 
-- In scope:
-- Out of scope:
+- In scope: daily note creation, active project note creation, inbox note
+  listing, and future vault validation helpers.
+- Out of scope: syncing, remote APIs, external package integrations, destructive
+  cleanup, or automatic edits to existing notes.
 
 ## Data Flow
 
-Describe how data enters, moves through, and leaves the system.
-
 ```text
-Input -> Validation -> Core behavior -> Output
+CLI arguments -> Path resolution -> Safety checks -> Note creation or listing -> Console output
 ```
 
-Replace this sketch with the real flow when the project has one.
+Write commands resolve a target path under the vault, check that the note does
+not already exist, and then create the file with exclusive creation. With
+`--dry-run`, they print the intended target path without writing. The inbox
+command reads direct Markdown files from `00 Inbox` and prints them sorted by
+filename.
 
 ## Operational Notes
 
-- Configuration:
-- Local development:
-- Testing:
-- Deployment:
-- Observability:
+- Configuration: `--vault` overrides the default `~/KnowledgeBase`.
+- Local development: run `python3 -m kb_tools --help`.
+- Testing: run `python3 -m unittest discover -s tests` or
+  `./scripts/check.sh --apply`.
+- Deployment: local-only scripts; no deployment target.
+- Observability: command output and process exit codes.
 
 ## Repository Conventions
 
@@ -51,5 +59,7 @@ Replace this sketch with the real flow when the project has one.
 
 ## Risks
 
-- Stack-specific commands are not configured yet.
-- Architecture and operational details are placeholders until the project is defined.
+- Note templates are intentionally minimal and may need to evolve with real
+  vault conventions.
+- Future wikilink validation should avoid modifying notes unless a command
+  explicitly requests it.

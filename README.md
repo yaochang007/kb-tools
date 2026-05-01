@@ -1,14 +1,16 @@
-# Project Template
+# kb-tools
 
-Language-neutral starter scaffold for coding projects under `~/Documents/Codex/projects`.
+Small local Python tools for maintaining an Obsidian vault at
+`~/KnowledgeBase`.
 
-Use this repository as the first folder for a new project. It is intentionally
-small: the goal is to provide stable operating habits before a language,
-framework, package manager, or deployment target is chosen.
+The project uses the Python standard library only. It does not require a package
+manager, virtual environment, or external dependencies.
 
 ## Structure
 
 - `AGENTS.md`: AI agent working instructions
+- `kb_tools/`: Python CLI package
+- `tests/`: standard-library `unittest` tests
 - `docs/architecture.md`: system shape, boundaries, and data flow
 - `docs/decisions.md`: decision log
 - `tasks/todo.md`: task list
@@ -19,19 +21,57 @@ framework, package manager, or deployment target is chosen.
 - `scripts/session-close.sh`: session closeout checklist
 - `.gitignore`: common local, cache, build, and secret patterns
 
-## Getting Started
+## Usage
 
-1. Copy this folder to a new project directory.
-2. Fill in the project purpose, commands, and architecture notes.
-3. Replace placeholder scripts with real commands when the stack is known.
-4. Keep `--dry-run` support in project scripts.
-5. Record meaningful technical choices in `docs/decisions.md`.
-6. Keep `tasks/todo.md` current enough that a future session can resume work.
+Run commands from the project root:
 
-## Commands
+```sh
+python3 -m kb_tools --help
+```
+
+Create today's daily note in `~/KnowledgeBase/10 Journal/Daily`:
+
+```sh
+python3 -m kb_tools daily
+```
+
+Preview a daily note without writing anything:
+
+```sh
+python3 -m kb_tools daily --date 2026-05-02 --dry-run
+```
+
+Create a project note in `~/KnowledgeBase/30 Projects/Active`:
+
+```sh
+python3 -m kb_tools project "Kitchen Renovation"
+```
+
+Preview a project note:
+
+```sh
+python3 -m kb_tools project "Kitchen Renovation" --dry-run
+```
+
+List unprocessed Markdown notes in `~/KnowledgeBase/00 Inbox`:
+
+```sh
+python3 -m kb_tools inbox
+```
+
+Use a different vault path:
+
+```sh
+python3 -m kb_tools --vault /path/to/KnowledgeBase inbox
+```
+
+Write commands refuse to overwrite existing notes.
+
+## Project Commands
 
 ```sh
 ./scripts/check.sh --dry-run
+./scripts/check.sh --apply
 ./scripts/dev.sh --dry-run
 ./scripts/session-start.sh --dry-run
 ./scripts/session-close.sh --dry-run
@@ -52,18 +92,23 @@ All scripts accept:
   commands, and `bash scripts/session-close.sh --apply test-session` checks that
   the session exists before closing it.
 
-## Customizing This Template
+`./scripts/check.sh --apply` runs:
 
-- Replace placeholder commands only after the project chooses a stack.
-- Add stack-specific setup, check, and dev instructions to this README.
+```sh
+python3 -m unittest discover -s tests
+```
+
+## Customizing This Project
+
+- Keep commands standard-library only until the project deliberately adds dependencies.
+- Add setup, check, and dev instructions to this README as behavior grows.
 - Update `AGENTS.md` when the project has conventions agents must follow.
 - Update `docs/architecture.md` when the system shape changes.
 - Keep secrets in local environment files that are ignored by Git.
 
 ## Git
 
-This template is intended to be tracked in Git from the beginning. After copying
-it to a new project, check the initial status with:
+Check the working tree with:
 
 ```sh
 git status --short

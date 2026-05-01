@@ -18,9 +18,26 @@ Consequences:
 
 ## Log
 
-## 2026-05-02: Keep Template Language-Neutral
+## 2026-05-02: Use Python Standard Library for Vault Tools
 
 Status: accepted
+
+Context:
+The first project features are local filesystem operations for an Obsidian
+vault.
+
+Decision:
+Implement the CLI with Python standard-library modules only and run tests with
+`unittest`.
+
+Consequences:
+The project can run with `python3 -m kb_tools` and does not require dependency
+installation. Future dependencies should be added deliberately when they solve a
+clear problem.
+
+## 2026-05-02: Keep Template Language-Neutral
+
+Status: superseded
 
 Context:
 This repository is a reusable starting point for projects that may use different
