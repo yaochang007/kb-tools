@@ -29,6 +29,26 @@ Run commands from the project root:
 python3 -m kb_tools --help
 ```
 
+## Setup
+
+To run `kb-tools` from any directory, add the local Codex bin directory to your
+`PATH`:
+
+```sh
+export PATH="$HOME/Documents/Codex/bin:$PATH"
+```
+
+Then run:
+
+```sh
+kb-tools search "Codex"
+```
+
+The wrapper lives at `~/Documents/Codex/bin/kb-tools` and runs this project
+directly without installing a Python package.
+
+## Commands
+
 Create today's daily note in `~/KnowledgeBase/10 Journal/Daily`:
 
 ```sh

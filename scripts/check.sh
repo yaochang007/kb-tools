@@ -44,12 +44,15 @@ kb_tools/cli.py
 tests/test_cli.py
 "
 
+WRAPPER="/Users/yaochang/Documents/Codex/bin/kb-tools"
+
 # In dry-run mode, describe the checks without reading or changing state.
 if [ "$MODE" = "dry-run" ]; then
   for path in $REQUIRED_FILES; do
     printf '[dry-run] check %s exists\n' "$path"
   done
   printf '[dry-run] check shell scripts are executable\n'
+  printf '[dry-run] check %s exists and is executable\n' "$WRAPPER"
   printf '[dry-run] run python3 -m unittest discover -s tests\n'
   exit 0
 fi
@@ -69,6 +72,11 @@ for path in scripts/check.sh scripts/dev.sh scripts/session-start.sh scripts/ses
     exit 1
   fi
 done
+
+if [ ! -x "$WRAPPER" ]; then
+  printf 'ERROR: wrapper is missing or not executable: %s\n' "$WRAPPER" >&2
+  exit 1
+fi
 
 python3 -m unittest discover -s tests
 
