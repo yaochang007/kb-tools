@@ -109,6 +109,91 @@ class KbToolsTests(unittest.TestCase):
             self.assertEqual(0, code)
             self.assertIn("No unprocessed notes found", stdout.getvalue())
 
+    def test_wikilink_targets_strip_aliases_and_headings(self) -> None:
+        text = (
+            "[[Note Name]]\n"
+            "[[Folder/Note Name]]\n"
+            "[[Note Name|Alias]]\n"
+            "[[Note Name#Heading]]\n"
+            "[[Folder/Note Name#Heading|Alias]]\n"
+        )
+
+        self.assertEqual(
+            [
+                "Note Name",
+                "Folder/Note Name",
+                "Note Name",
+                "Note Name",
+                "Folder/Note Name",
+            ],
+            cli.wikilink_targets(text),
+        )
+
+    def test_note_index_includes_filename_and_relative_path_without_md(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            vault = Path(tmp)
+            folder = vault / "Folder"
+            folder.mkdir()
+            (folder / "Note Name.md").write_text("", encoding="utf-8")
+
+            self.assertEqual(
+                {"Note Name", "Folder/Note Name"},
+                cli.note_index(vault),
+            )
+
+    def test_find_broken_wikilinks_reports_missing_targets(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            vault = Path(tmp)
+            folder = vault / "Folder"
+            folder.mkdir()
+            source = vault / "Source.md"
+            (vault / "Existing.md").write_text("", encoding="utf-8")
+            (folder / "Nested.md").write_text("", encoding="utf-8")
+            source.write_text(
+                "\n".join(
+                    [
+                        "[[Existing]]",
+                        "[[Folder/Nested#Heading|Alias]]",
+                        "[[Missing Note|Alias]]",
+                        "[[Folder/Missing#Heading]]",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            self.assertEqual(
+                [
+                    cli.BrokenLink(source=source, target="Missing Note"),
+                    cli.BrokenLink(source=source, target="Folder/Missing"),
+                ],
+                cli.find_broken_wikilinks(vault),
+            )
+
+    def test_main_links_prints_broken_links(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            vault = Path(tmp)
+            source = vault / "Source.md"
+            source.write_text("[[Missing#Heading|Alias]]", encoding="utf-8")
+
+            stdout = io.StringIO()
+            with redirect_stdout(stdout):
+                code = cli.main(["--vault", tmp, "links"])
+
+            self.assertEqual(0, code)
+            self.assertEqual(f"{source}: Missing\n", stdout.getvalue())
+
+    def test_main_links_prints_success_message(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            vault = Path(tmp)
+            (vault / "Source.md").write_text("[[Source]]", encoding="utf-8")
+
+            stdout = io.StringIO()
+            with redirect_stdout(stdout):
+                code = cli.main(["--vault", tmp, "links"])
+
+            self.assertEqual(0, code)
+            self.assertIn("No broken wikilinks found", stdout.getvalue())
+
 
 if __name__ == "__main__":
     unittest.main()

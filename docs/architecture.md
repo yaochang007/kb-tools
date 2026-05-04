@@ -25,21 +25,23 @@ Obsidian vault at `~/KnowledgeBase`.
 ## Boundaries
 
 - In scope: daily note creation, active project note creation, inbox note
-  listing, and future vault validation helpers.
+  listing, and broken wikilink reporting.
 - Out of scope: syncing, remote APIs, external package integrations, destructive
   cleanup, or automatic edits to existing notes.
 
 ## Data Flow
 
 ```text
-CLI arguments -> Path resolution -> Safety checks -> Note creation or listing -> Console output
+CLI arguments -> Path resolution -> Safety checks -> Note creation, listing, or validation -> Console output
 ```
 
 Write commands resolve a target path under the vault, check that the note does
 not already exist, and then create the file with exclusive creation. With
 `--dry-run`, they print the intended target path without writing. The inbox
 command reads direct Markdown files from `00 Inbox` and prints them sorted by
-filename.
+filename. The links command recursively reads Markdown files, builds an index by
+note filename and vault-relative note path without `.md`, and reports wikilinks
+whose stripped target does not match that index.
 
 ## Operational Notes
 
@@ -61,5 +63,5 @@ filename.
 
 - Note templates are intentionally minimal and may need to evolve with real
   vault conventions.
-- Future wikilink validation should avoid modifying notes unless a command
-  explicitly requests it.
+- Wikilink validation currently checks note targets only; it strips headings but
+  does not verify whether a heading exists inside the resolved note.

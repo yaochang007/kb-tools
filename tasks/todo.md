@@ -13,7 +13,7 @@
 - [x] Add first useful check command.
 - [x] Capture initial decisions.
 - [x] Add setup instructions once dependencies are known.
-- [ ] Add broken wikilink validation.
+- [x] Add broken wikilink validation.
 
 ## Later
 

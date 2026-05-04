@@ -23,6 +23,12 @@ class NoteResult:
     dry_run: bool
 
 
+@dataclass(frozen=True)
+class BrokenLink:
+    source: Path
+    target: str
+
+
 def parse_note_date(value: str) -> date:
     try:
         return date.fromisoformat(value)
@@ -98,6 +104,49 @@ def list_unprocessed_inbox(vault: Path) -> list[Path]:
     return sorted(notes, key=lambda path: path.name.lower())
 
 
+def markdown_files(vault: Path) -> list[Path]:
+    if not vault.is_dir():
+        return []
+    return sorted(
+        (path for path in vault.rglob("*.md") if path.is_file()),
+        key=lambda path: path.relative_to(vault).as_posix().lower(),
+    )
+
+
+def note_index(vault: Path) -> set[str]:
+    index: set[str] = set()
+    for path in markdown_files(vault):
+        relative_note = path.relative_to(vault).with_suffix("").as_posix()
+        index.add(path.stem)
+        index.add(relative_note)
+    return index
+
+
+WIKILINK_RE = re.compile(r"\[\[([^\]\n]+)\]\]")
+
+
+def wikilink_targets(text: str) -> list[str]:
+    targets: list[str] = []
+    for match in WIKILINK_RE.finditer(text):
+        target = match.group(1).split("|", 1)[0].split("#", 1)[0].strip()
+        if target:
+            targets.append(target)
+    return targets
+
+
+def find_broken_wikilinks(vault: Path) -> list[BrokenLink]:
+    index = note_index(vault)
+    broken: list[BrokenLink] = []
+
+    for path in markdown_files(vault):
+        text = path.read_text(encoding="utf-8")
+        for target in wikilink_targets(text):
+            if target not in index:
+                broken.append(BrokenLink(source=path, target=target))
+
+    return broken
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="kb-tools",
@@ -134,6 +183,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
 
     subparsers.add_parser("inbox", help="List Markdown notes in 00 Inbox")
+    subparsers.add_parser("links", help="Report broken Obsidian wikilinks")
 
     return parser
 
@@ -170,6 +220,14 @@ def main(argv: list[str] | None = None) -> int:
                 print(format_inbox_path(path))
             if not notes:
                 print(f"No unprocessed notes found in {format_path(vault / INBOX_DIR)}")
+            return 0
+
+        if args.command == "links":
+            broken_links = find_broken_wikilinks(vault)
+            for broken_link in broken_links:
+                print(f"{format_path(broken_link.source)}: {broken_link.target}")
+            if not broken_links:
+                print(f"No broken wikilinks found in {format_path(vault)}")
             return 0
     except (FileExistsError, ValueError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)

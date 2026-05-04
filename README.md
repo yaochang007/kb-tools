@@ -59,10 +59,16 @@ List unprocessed Markdown notes in `~/KnowledgeBase/00 Inbox`:
 python3 -m kb_tools inbox
 ```
 
+Check for broken Obsidian wikilinks:
+
+```sh
+python3 -m kb_tools links
+```
+
 Use a different vault path:
 
 ```sh
-python3 -m kb_tools --vault /path/to/KnowledgeBase inbox
+python3 -m kb_tools --vault /path/to/KnowledgeBase links
 ```
 
 Write commands refuse to overwrite existing notes.
