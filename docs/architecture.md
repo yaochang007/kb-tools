@@ -24,8 +24,9 @@ Obsidian vault at `~/KnowledgeBase`.
 
 ## Boundaries
 
-- In scope: daily note creation, active project note creation, inbox note
-  listing, and broken wikilink reporting.
+- In scope: daily note creation, active project note creation, literature/source
+  note creation, inbox note listing, broken wikilink reporting, and read-only
+  Markdown search.
 - Out of scope: syncing, remote APIs, external package integrations, destructive
   cleanup, or automatic edits to existing notes.
 

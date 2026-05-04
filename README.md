@@ -53,6 +53,27 @@ Preview a project note:
 python3 -m kb_tools project "Kitchen Renovation" --dry-run
 ```
 
+Create a literature/source note in `~/KnowledgeBase/20 Notes/Literature`:
+
+```sh
+python3 -m kb_tools source "A Useful Article"
+```
+
+Create a source note with metadata:
+
+```sh
+python3 -m kb_tools source "A Useful Article" \
+  --url https://example.com/article \
+  --author "Ada Lovelace" \
+  --date 2026-05-05
+```
+
+Preview a source note:
+
+```sh
+python3 -m kb_tools source "A Useful Article" --dry-run
+```
+
 List unprocessed Markdown notes in `~/KnowledgeBase/00 Inbox`:
 
 ```sh
@@ -65,10 +86,20 @@ Check for broken Obsidian wikilinks:
 python3 -m kb_tools links
 ```
 
+Search Markdown notes:
+
+```sh
+python3 -m kb_tools search "Codex"
+python3 -m kb_tools search "Graphify" --folder "30 Projects/Active"
+python3 -m kb_tools search "obsidian" --case-sensitive
+python3 -m kb_tools search "AI" --max-results 10
+python3 -m kb_tools search "Codex" --content-only
+```
+
 Use a different vault path:
 
 ```sh
-python3 -m kb_tools --vault /path/to/KnowledgeBase links
+python3 -m kb_tools --vault /path/to/KnowledgeBase search "Codex"
 ```
 
 Write commands refuse to overwrite existing notes.
