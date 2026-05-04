@@ -47,3 +47,4 @@ coverage/
 *.sqlite
 *.sqlite3
 *.db
+graphify-out/
