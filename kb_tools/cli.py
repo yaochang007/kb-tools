@@ -88,14 +88,24 @@ def daily_note_body(note_date: date) -> str:
 
 
 def project_note_body(title: str) -> str:
-    today = date.today().isoformat()
     return (
         f"# {title.strip()}\n\n"
-        "Status: Active\n"
-        f"Created: {today}\n\n"
-        "## Purpose\n\n"
-        "## Notes\n\n"
-        "## Next Actions\n"
+        "## Goal\n\n"
+        "## Why this matters\n\n"
+        "## Current Status\n\n"
+        "## Scope\n\n"
+        "### In Scope\n\n"
+        "### Out of Scope\n\n"
+        "## Decisions\n\n"
+        "## Risks\n\n"
+        "## Human Approval Gates\n\n"
+        "## Related Paths\n\n"
+        "- Code project:\n"
+        "- GitHub repo:\n"
+        "- Workflow runner task:\n"
+        "- Related notes:\n\n"
+        "## Next Actions\n\n"
+        "- [ ]\n"
     )
 
 

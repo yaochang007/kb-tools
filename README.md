@@ -61,7 +61,7 @@ Preview a daily note without writing anything:
 python3 -m kb_tools daily --date 2026-05-02 --dry-run
 ```
 
-Create a project note in `~/KnowledgeBase/30 Projects/Active`:
+Create an AI harness project note in `~/KnowledgeBase/30 Projects/Active`:
 
 ```sh
 python3 -m kb_tools project "Kitchen Renovation"

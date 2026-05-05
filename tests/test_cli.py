@@ -45,7 +45,28 @@ class KbToolsTests(unittest.TestCase):
                 vault / "30 Projects" / "Active" / "my-new-project.md",
                 result.path,
             )
-            self.assertIn("# My New Project!", result.path.read_text(encoding="utf-8"))
+            self.assertEqual(
+                (
+                    "# My New Project!\n\n"
+                    "## Goal\n\n"
+                    "## Why this matters\n\n"
+                    "## Current Status\n\n"
+                    "## Scope\n\n"
+                    "### In Scope\n\n"
+                    "### Out of Scope\n\n"
+                    "## Decisions\n\n"
+                    "## Risks\n\n"
+                    "## Human Approval Gates\n\n"
+                    "## Related Paths\n\n"
+                    "- Code project:\n"
+                    "- GitHub repo:\n"
+                    "- Workflow runner task:\n"
+                    "- Related notes:\n\n"
+                    "## Next Actions\n\n"
+                    "- [ ]\n"
+                ),
+                result.path.read_text(encoding="utf-8"),
+            )
 
     def test_project_note_slug_keeps_unicode_words(self) -> None:
         self.assertEqual("知识库-project", cli.slugify_title("知识库 Project"))
